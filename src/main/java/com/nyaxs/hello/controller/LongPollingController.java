@@ -13,7 +13,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("hello")
 public class LongPollingController {
-    private static Logger log = LoggerFactory.getLogger(HelloController.class);
+    private static Logger log = LoggerFactory.getLogger(LongPollingController.class);
     private static Long TIME_OUT = 30000L;
     public static Multimap<String, DeferredResult<String>> watchRequests = Multimaps.synchronizedMultimap(HashMultimap.create());
 
