@@ -68,7 +68,6 @@
 - ConcurrentSkipListMap : 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
 ------
 
-------
 
 ### 锁
 - CAS,AQS,ReentrantLock,Semaphore,CountDownLatch
@@ -114,12 +113,50 @@
 
 
 # JVM
-### JVM运行时数据区域
-![JVM运行时数据区域.png](./imgs/jvmMemoryZone.png)
+## JVM运行时数据区域
+![JVM运行时数据区域.png](imgs/jvmMemoryZone.png)
+- 堆
+  - 分代
+- 虚拟机栈
+- 方法区
+- 直接内存
+
+### 类文件结构
+### 类加载过程，类加载器，双亲委派
+### JVM中对象的创建
+1. 类加载检查
+2. 分配内存
+3. 初始化零值
+4. 设置对象头
+5. 执行init方法
+
+### 对象的内存结构
+- 对象头
+- 实例数据
+- 对齐填充
+### 对象的访问定位
+- 句柄
+- 直接指针
+### 字符串常量池
+### OOM
+
+## GC垃圾回收
+### 堆结构
+### 分配和回收原则
+### 死亡对象判断方法
+### 垃圾收集算法
+### 垃圾收集器
+
+## 重要常用参数
+### 堆内存
+### 垃圾收集
+### 处理OOM
+
+## JDK 监控和故障处理工具
+这些命令在 JDK 安装目录下的 bin 目录下：jps (JVM Process Status）: 类似 UNIX 的 ps 命令。用于查看所有 Java 进程的启动类、传入参数和 Java 虚拟机参数等信息；jstat（JVM Statistics Monitoring Tool）: 用于收集 HotSpot 虚拟机各方面的运行数据;jinfo (Configuration Info for Java) : Configuration Info for Java,显示虚拟机配置信息;jmap (Memory Map for Java) : 生成堆转储快照;jhat (JVM Heap Dump Browser) : 用于分析 heapdump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果;jstack (Stack Trace for Java) : 生成虚拟机当前时刻的线程快照，线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合
+------
 
 
-### 类加载，双亲委派
-### 
 
 # Spring
 ### Spring 核心原理
