@@ -38,7 +38,7 @@ public class NormalTest {
         String.valueOf(aaa);
 
         StringBuilder sb =new StringBuilder(a);
-        sb.reverse()
+        sb.reverse();
         Object[] objects = Arrays.stream(split).distinct().collect(Collectors.toList()).toArray();
 
         int  x = 9;
