@@ -23,15 +23,63 @@
 
 ### 进程，线程，并发，并行，同步，异步
 
+### 并发编程三个重要特性
+  - 原子性
+  - 可见性
+  - 有序性
+
 ------
 
 ### 线程生命周期
 ![threadState.png](imgs%2FthreadState.png)
 
+### 线程池
+- 线程池：
+  - 作用 
+  - 创建
+  - 常见参数
+  - 处理流程
+  - ![threadPoolFlow.png](imgs%2FthreadPoolFlow.png)
+  - 饱和策略
+  - 阻塞队列
+  - 配置线程池大小的策略
+    - CPU密集型--N+1
+    - IO密集型--2N
+- Executor
+- Executor 框架不仅包括了线程池的管理，还提供了线程工厂、队列以及拒绝策略等，Executor 框架让并发编程变得更加简单。
+  - 任务: Callable,Runnable
+    - Runnable 接口不会返回结果或抛出检查异常，execute()提交任务
+    - Callable Runnable 强化版，可以返回结果或抛出检查异常，submit()提交任务
+  - 执行: Executor,ExecutorService,ThreadPoolExecutor,ScheduledThreadPoolExecutor
+  - ![threadPool.png](imgs%2FthreadPool.png)
+  - 异步结果: Future，FutureTask,CompletableFuture
+    - Future.get()
+- 几种常见的内置线程池
+  - FixedThreadPool 被称为可重用固定线程数的线程池
+  - SingleThreadExecutor 是只有一个线程的线程池。
+  - CachedThreadPool 是一个会根据需要创建新线程的线程池。
+  - ScheduledThreadPool 用来在给定的延迟后运行任务或者定期执行任务。
+
+### 常见并发容器
+- ConcurrentHashMap : 线程安全的 HashMap
+- CopyOnWriteArrayList : 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector。
+- ConcurrentLinkedQueue : 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。
+- BlockingQueue : 这是一个接口，JDK 内部通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。
+- ConcurrentSkipListMap : 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
+------
+
 ------
 
 ### 锁
-- 乐观锁，悲观锁,CAS,synchronized,volatile,AQS
+- CAS,AQS,ReentrantLock,Semaphore,CountDownLatch
+  - CAS: CompareAndSwap(CompareAndSet)
+  - AQS: AbstractQueueSynchronizer-->CLH队列锁
+  - Semaphore: 指定数量线程共享资源
+  - CountDownLatch: 指定数量线程阻塞在某处，线程间等待
+  - CyclicBarrier: CountDownLatch强化版
+- synchronized,volatile
+- ThreadLocal
+- 乐观锁，悲观锁,共享锁，独占锁，读锁，写锁
 - 线程死锁描述的是这样一种情况：多个线程同时被阻塞，它们中的一个或者全部都在等待某个资源被释放。由于线程被无限期地阻塞，因此程序不可能正常终止。
 - 上面的例子符合产生死锁的四个必要条件：
   - 互斥条件：该资源任意一个时刻只由一个线程占用。
@@ -46,10 +94,30 @@
 ------
 
 ### Java 内存模型（JMM）
+- 缓存模型
+  - cpu l1,l2,l3三级缓存<-->内存
+  - ![cpuMM.png](imgs%2FcpuMM.png)
+  - 线程 --> JVM本地内存<-->主内存
+  - ![JMM.png](imgs%2FJMM.png)
+  - Java内存区域（JVM运行时存储数据分区）和JMM(抽象线程和主内存关系，规定了代码->cpu指令的并发开发规范）
+- 指令重排序
+  - Java 源代码会经历 编译器优化重排 —> 指令并行重排 —> 内存系统重排 的过程，最终才变成操作系统可执行的指令序列。
+  - 指令重排序可以保证串行语义一致，但是没有义务保证多线程间的语义也一致
+  - 对于编译器，通过禁止特定类型的编译器重排序的方式来禁止重排序。对于处理器，通过插入内存屏障（Memory Barrier，或有时叫做内存栅栏，Memory Fence）的方式来禁止特定类型的处理器重排序。
+  - happens-before 原则
+    -  happens-before 原则的诞生是为了程序员和编译器、处理器之间的平衡。程序员追求的是易于理解和编程的强内存模型，遵守既定规则编码即可。编译器和处理器追求的是较少约束的弱内存模型，让它们尽己所能地去优化性能，让性能最大化。
+    -  happens-before 原则的设计思想其实非常简单：为了对编译器和处理器的约束尽可能少，只要不改变程序的执行结果（单线程程序和正确执行的多线程程序），编译器和处理器怎么进行重排序优化都行。
+    -  对于会改变程序执行结果的重排序，JMM 要求编译器和处理器必须禁止这种重排序。
+    - ![happensBefore.png](imgs%2FhappensBefore.png)
+
+------
+
 
 # JVM
-### 内存结构
-![内存结构.png](./imgs/内存结构.png)
+### JVM运行时数据区域
+![JVM运行时数据区域.png](./imgs/jvmMemoryZone.png)
+
+
 ### 类加载，双亲委派
 ### 
 
