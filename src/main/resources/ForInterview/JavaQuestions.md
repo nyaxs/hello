@@ -202,16 +202,25 @@
 ----------------------
 ### Spring 事务
   - 事务是逻辑上的一组操作，要么都执行，要么都不执行。
+  - 事务原理
+    - **spring的事务是通过数据库连接来实现的。当前线程中保存了一个map，key是数据源，value是数据库连接。**
   - 管理事务的两种方式
     - 编程式事务 ： 在代码中硬编码(不推荐使用) : 通过 TransactionTemplate或者 TransactionManager 手动管理事务，实际应用中很少使用，但是对于你理解 Spring 事务管理原理有帮助。
     - 声明式事务 ： 在 XML 配置文件中配置或者直接基于注解（推荐使用） : 实际是通过 AOP 实现（基于@Transactional 的全注解方式使用最多）
       - @Transactional(rollbackFor = Exception.class): 在 @Transactional 注解中如果不配置rollbackFor属性,那么事务只会在遇到RuntimeException的时候才会回滚，加上 rollbackFor=Exception.class,可以让事务在遇到非运行时异常时也回滚。
-
-  - 事务原理
-  - 事务失效的原因
-    -  Spring AOP 自调用问题若同一类中的其他没有 @Transactional 注解的方法内部调用有 @Transactional 注解的方法，有@Transactional 注解的方法的事务会失效。这是由于Spring AOP代理的原因造成的，因为只有当 @Transactional 注解的方法在类以外被调用的时候，Spring 事务管理才生效。
-    - 
-
+ - 事务失效的原因
+    - 事务不生效
+      - 访问权限问题: spring要求必须是public
+      - 方法用final修饰: 代理类无法重写该方法
+      - 方法内部调用: Spring AOP 自调用问题若同一类中的其他没有 @Transactional 注解的方法内部调用有 @Transactional 注解的方法，有@Transactional 注解的方法的事务会失效。这是由于Spring AOP代理的原因造成的，因为只有当 @Transactional 注解的方法在类以外被调用的时候，Spring 事务管理才生效。
+      - 未被spring管理: 不是bean
+      - 多线程调用: 我们说的同一个事务，其实是指同一个数据库连接，只有拥有同一个数据库连接才能同时提交和回滚。如果在不同的线程，拿到的数据库连接肯定是不一样的，所以是不同的事务。
+    - 事务不回滚
+      - 错误的传播特性: 事务传播特性定义成了Propagation.NOT_SUPPORTED，这种类型的传播特性不支持事务，如果有事务则会抛异常。 目前只有这三种传播特性才会创建新事务：NESTED,REQUIRES_NEW,REQUIRED。
+      - 自己吞了异常: 把异常吃了，然后又不抛出来，事务也不会回滚
+      - 手动抛了别的异常: 默认回滚的是RunTimeException。如果想触发其他异常的回滚，需要在注解上配置一下，如：@Transactional(rollbackFor = Exception.class)
+      - 自定义了回滚异常: 指定了回滚异常时，发生其他异常不在范围内，就不会回滚。可定义为Exception.class 或者Throwable.class
+      - 嵌套事务回滚多了: 方法出现了异常，没有手动捕获，会继续往上抛，到外层方法的代理方法中捕获了异常。所以，这种情况是直接回滚了整个事务，不只回滚单个保存点。想要回滚到保存点时，可以将内部嵌套事务放在try/catch中，并且不继续往上抛异常。这样就能保证，如果内部嵌套事务中出现异常，只回滚内部事务，而不影响外部事务。
   - 事务传播行为
     -  **事务传播行为是为了解决业务层方法之间互相调用的事务问题。** 当事务方法被另一个事务方法调用时，必须指定事务应该如何传播。例如：方法可能继续在现有事务中运行，也可能开启一个新事务，并在自己的事务中运行
     1. TransactionDefinition.PROPAGATION_REQUIRED使用的最多的一个事务传播行为，我们平时经常使用的@Transactional注解默认使用就是这个事务传播行为。如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。
@@ -257,8 +266,27 @@
 ## SpringBoot
 ### SpringBoot 启动流程
 ### SpringBoot 自动配置原理
+- SpringBoot 定义了一套接口规范，这套规范规定：SpringBoot 在启动时会扫描外部引用 jar 包中的META-INF/spring.factories文件，将文件中配置的类型信息加载到 Spring 容器，并执行类中定义的各种操作。对于外部 jar 来说，只需要按照 SpringBoot 定义的标准，就能将自己的功能装置进 SpringBoot。
+- Spring Boot 通过@EnableAutoConfiguration开启自动装配，通过 SpringFactoriesLoader 最终加载META-INF/spring.factories中的自动配置类实现自动装配，自动配置类其实就是通过@Conditional按需加载的配置类，想要其生效必须引入spring-boot-starter-xxx包实现起步依赖
+  - 核心注解 @SpringBootApplication
+    - 可以把 @SpringBootApplication看作是 @Configuration、@EnableAutoConfiguration、@ComponentScan 注解的集合。
+    - 这三个注解的作用分别是：
+      - @EnableAutoConfiguration：启用 SpringBoot 的自动配置机制
+      - @Configuration：允许在上下文中注册额外的 bean 或导入其他配置类
+      - @ComponentScan： 扫描被@Component (@Service,@Controller)注解的 bean，注解默认会扫描启动类所在的包下所有的类 ，可以自定义不扫描某些 bean。如下图所示，容器中将排除TypeExcludeFilter和AutoConfigurationExcludeFilter。
+- SpringBoot自动配置流程
+  1. 判断自动装配开关是否打开。默认spring.boot.enableautoconfiguration=true，可在 application.properties 或 application.yml 中设置
+  2. 获取EnableAutoConfiguration注解中的 exclude 和 excludeName。
+  3. 获取需要自动装配的所有配置类，读取META-INF/spring.factories
+  4. 筛选真正需要被加载的配置类，@ConditionalOnXXX 中的所有条件都满足，该类才会生效
+------
 
-# SpringCloud
+# SpringCloud&分布式
+### 网关
+### 网关
+### 网关
+### 网关
+
 
 # MySQL
 ### 三大范式
