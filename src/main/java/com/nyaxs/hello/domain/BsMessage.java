@@ -1,5 +1,7 @@
 package com.nyaxs.hello.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -9,6 +11,7 @@ public class BsMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
+    @TableId("message_id")
     private Long messageId;
     @Column(name = "sender_id")
     private Long senderId;
