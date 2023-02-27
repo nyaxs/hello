@@ -11,7 +11,12 @@
 
 ------
 
-### 多态，继承，接口，抽象类，代理
+### 多态，继承，接口，抽象类，代理,SPI
+- SPI(ServiceProviderInterface)
+  - 如：springboot-starter,slf4j日志
+    - 调用方定义接口，如slf4j定义接口规范，各家引入接口文件，提供实现
+    - 实现方在resource目录下定义配置文件，描述接口实现类位置
+    - 调用方去加载配置，反射-类加载-读取配置文件，读取实现，调用
 ### 异常
 ### 泛型
 ### 反射
@@ -191,6 +196,8 @@
   - 统一异常处理
     - @ControllerAdvice + @ExceptionHandler
       - 这种异常处理方式下，会给所有或者指定的 Controller 织入异常处理的逻辑（AOP），当 Controller 中的方法抛出异常的时候，由被@ExceptionHandler 注解修饰的方法进行处理。
+
+
 - Spring 用到的设计模式
   - 工厂设计模式 : Spring 使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。
   - 代理设计模式 : Spring AOP 功能的实现。
@@ -318,6 +325,28 @@
 - Paxos
   - 提议者、接受者（投票）、学习者（运算）
 - Raft
+
+### 分布式事务
+- 基础理论
+  - CAP&BASE
+  - 一致性
+  - 柔性事务
+  - 刚性事务
+- 分布式事务解决方案
+  - 2PC(两阶段提交协议)
+    - 准备阶段(Prepare)
+    - 提交阶段(Commit)
+  - 3PC(三阶段提交协议)
+    - 准备阶段(CanCommit)
+    - 预提交阶段(PreCommit)
+    - 提交阶段(DoCommit)
+  - TCC(补偿事务)
+    - Try-Confirm-Cancel
+  - MQ(消息队列事务)
+  - SAGA(长事务解决方案)
+    - 长事务拆分成多个本地短事务并配合补偿动作
+    - T1...Tn
+    - C1...Cn
 ------
 
 ## SpringCloud&&微服务
@@ -351,7 +380,33 @@
 
 # MySQL
 ### 三大范式
+- 第一范式(确保每列保持原子性),属性（对应于表中的字段）不能再被分割
+- 第二范式(确保表中的每列都和主键相关),第二范式在第一范式的基础上增加了一个列，这个列称为主键，非主属性都依赖于主键。消除乐函数依赖。
+- 第三范式(确保每列都和主键列直接相关,而不是间接相关)，消除传递函数依赖。
 ### 日志
+- binlog(二进制日志)
+  - 逻辑日志
+  - 主从复制
+- redo log(重做日志)
+```
+redo日志
+1.先将原始数据从磁盘读入内存（缓冲池 Buffer pool），事务发生时，会修改内存中的拷贝，此时还未写入磁盘
+2.生成redo日志，写入redo log buffer
+3.当事务commit之后，以一定的频率 （innodb_flush_log_at_trx_commit也就是刷盘策略）写入redo log file（在磁盘中）
+4.innodb_flush_log_at_trx_commit
+设置 0 不刷盘，操作系统默认每1秒进行同步
+                                   1 事务提交就刷盘（其实就是写入PageCache 立即刷盘 写入redo log file ）
+                                    2 事务提交将redo log buffer写入PageCache  每秒刷新一次到磁盘
+5.redo log file里有个checkpoint（之前都写入磁盘），write pos（写入位置）保证事物的持久性 ```
+
+  - 物理日志，记录缓存中数据页的变更
+  - 保证事务的持久性
+
+
+- undo log(撤销日志)
+  - 逻辑日志，操作记录的逆运算，补偿动作
+  - 保证事务的原子性
+  - 用于MVCC（多版本并发控制）,实现非锁定读取
 ### 框架
 ### 引擎
 ### 事务
