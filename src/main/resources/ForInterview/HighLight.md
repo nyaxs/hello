@@ -9,4 +9,12 @@
 ## 手写 spring
 ## 手写负载均衡
 ## 加密处理
+## kafka
+## elasticSearch
+## RocketMQ
+## mysql 分库分表
+## mysql 主从复制
+## redis 主从复制
+## redis 哨兵模式
+## xxl-job
 ## websocket原理
