@@ -288,6 +288,20 @@
   4. 筛选真正需要被加载的配置类，@ConditionalOnXXX 中的所有条件都满足，该类才会生效
 ------
 
+## MyBatis
+- MyBatis 的 xml 映射文件和 MyBatis 内部数据结构之间的映射关系？
+- 答：MyBatis 将所有 xml 配置信息都封装到 All-In-One 重量级对象 Configuration 内部。 在 xml 映射文件中， 
+  - < parameterMap> 标签会被解析为 ParameterMap 对象，其每个子元素会被解析为 ParameterMapping 对象。 
+  - < resultMap> 标签会被解析为 ResultMap 对象，其每个子元素会被解析为 ResultMapping 对象。
+  - 每一个 < select>、< insert>、< update>、< delete> 标签均会被解析为 MappedStatement 对象，标签内的 sql 会被解析为 BoundSql 对象。
+- MyBatis 都有哪些 Executor 执行器？它们之间的区别是什么？
+- 答：MyBatis 有三种基本的 Executor 执行器：
+  - SimpleExecutor： 每执行一次 update 或 select，就开启一个 Statement 对象，用完立刻关闭 Statement 对象。
+  - ReuseExecutor： 执行 update 或 select，以 sql 作为 key 查找 Statement 对象，存在就使用，不存在就创建，用完后，不关闭 Statement 对象，而是放置于 Map<String, Statement>内，供下一次使用。简言之，就是重复使用 Statement 对象。
+  - BatchExecutor ：执行 update（没有 select，JDBC 批处理不支持 select），将所有 sql 都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个 Statement 对象，每个 Statement 对象都是 addBatch()完毕后，等待逐一执行 executeBatch()批处理。与 JDBC 批处理相同。
+  - 作用范围：Executor 的这些特点，都严格限制在 SqlSession 生命周期范围内
+
+
 # SpringCloud&分布式
 ## 分布式理论
 ### CAP理论
@@ -561,6 +575,11 @@ redo日志
 ### 主从复制
 ### 集群，哨兵
 
+
+
+
+## 分布式定时任务
+
 # ElasticSearch
 ## 倒排索引
 
@@ -574,7 +593,13 @@ redo日志
 ### 计算在线峰值
 ### 定时任务
 ### 实时消息
-
+### 定时任务&&批处理
+#### XXL-JOB
+- 使用方法
+  - 引入依赖，添加配置{调度中心地址、执行器信息、日志信息、token}
+  - 读取配置，创建xxl-executor 执行器，创建了 Spring 容器下的 XXL-JOB 执行器 Bean 对象。要注意，方法上添加了的 @Bean 注解，配置了启动和销毁方法。
+  - 继承 XXL-JOB IJobHandler 抽象类，实现定时任务的逻辑。实现 #execute(String param) 方法。
+    在方法上，添加 @JobHandler 注解，设置 JobHandler 的名字。后续，我们在调度中心的控制台中，新增任务时，需要使用到这个名字。
 
 # 设计模式
 

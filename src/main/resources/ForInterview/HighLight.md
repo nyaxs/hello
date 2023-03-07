@@ -18,3 +18,8 @@
 ## redis 哨兵模式
 ## xxl-job
 ## websocket原理
+## tcp/ip编程
+## 微信小程序接入支付
+
+## 团队管理经验
+## 突出特长亮点--tcp/ip网络编程，netty，网关

@@ -59,6 +59,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
+        <dependency>
+            <groupId></groupId>
+            <artifactId>spring-gatewa</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
