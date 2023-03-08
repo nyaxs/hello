@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -31,8 +32,17 @@ public class NioSocket {
         while(!Thread.interrupted()){
             SocketChannel socketChannel = serverSocketChannel.accept();
             if (socketChannel != null) {
-
+                log.info("connected...");
+                socketChannel.configureBlocking(false);
+                channelList.add(socketChannel);
             }
+
+            Iterator<SocketChannel> iterator = channelList.iterator();
+            while (iterator.hasNext()){
+                SocketChannel sc = iterator.next();
+                SocketSupport.runSocketChannel(sc);
+            }
+
         }
 
     }
