@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.List;
  * @date 2023-03-08 16:53
  */
 public class NioSocket {
+    int CAPACITY = 1024;
     private static final Logger log = LoggerFactory.getLogger(NioSocket.class);
     //保存客户端连接
     List<SocketChannel> channelList = new ArrayList<>();
@@ -40,7 +42,15 @@ public class NioSocket {
             Iterator<SocketChannel> iterator = channelList.iterator();
             while (iterator.hasNext()){
                 SocketChannel sc = iterator.next();
-                SocketSupport.runSocketChannel(sc);
+                ByteBuffer byteBuffer = ByteBuffer.allocate(CAPACITY);
+                int read = sc.read(byteBuffer);
+                if(read>0){
+                    log.info("get data..."+new String(byteBuffer.array()));
+                }else if(read ==-1){
+                    iterator.remove();
+                    log.info("lose connection...");
+                }
+
             }
 
         }
