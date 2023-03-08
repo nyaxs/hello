@@ -1,4 +1,4 @@
-package com.nyaxs.hello.support;
+package com.nyaxs.hello.socket;
 
 @FunctionalInterface
 public interface PrintString {
