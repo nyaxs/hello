@@ -16,11 +16,15 @@ public class MainSocket {
     private static Logger log = LoggerFactory.getLogger(MainSocket.class);
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        MultiThreadBlockSocket socketSupport = new MultiThreadBlockSocket(9000,2048);
-        new Thread(socketSupport).start();
+//        MultiThreadBlockSocket socketSupport = new MultiThreadBlockSocket(9000,2048);
+//        new Thread(socketSupport).start();
+//
+//        ThreadPoolBlockSocket threadPoolBlockSocket = new ThreadPoolBlockSocket(9001);
+//        threadPoolBlockSocket.createThreadPool();
 
-        ThreadPoolBlockSocket threadPoolBlockSocket = new ThreadPoolBlockSocket(9001);
-        threadPoolBlockSocket.createThreadPool();
+        NioSocket nioSocket = new NioSocket();
+//        nioSocket.connect();
+        nioSocket.connectWithSelector();
         Thread.sleep(5000);
     }
 }

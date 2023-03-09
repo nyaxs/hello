@@ -60,8 +60,9 @@
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
         <dependency>
-            <groupId></groupId>
-            <artifactId>spring-gatewa</artifactId>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.35.Final</version>
         </dependency>
     </dependencies>
 
