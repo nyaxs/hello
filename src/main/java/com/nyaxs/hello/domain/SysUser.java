@@ -3,11 +3,12 @@ package com.nyaxs.hello.domain;
 import com.baomidou.mybatisplus.annotation.TableId;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "sys_user")
-public class SysUser {
+public class SysUser implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
