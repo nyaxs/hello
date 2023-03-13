@@ -22,7 +22,7 @@ import java.util.List;
  * @description
  * @date 2023-02-24 14:40
  */
-@RestController
+//@RestController
 public class TestSpring {
 
     @Autowired
