@@ -1,4 +1,4 @@
-package com.nyaxs.hello.socket.http;
+package com.nyaxs.hello.socket.http.client;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -14,7 +14,7 @@ import io.netty.util.CharsetUtil;
  * @description
  * @date 2023-03-13 13:49
  */
-public class BusiHandler extends ChannelInboundHandlerAdapter {
+public class ClientBusiHandler extends ChannelInboundHandlerAdapter {
 
     void sendBack(ChannelHandlerContext ctx, String res, HttpResponseStatus status){
         FullHttpResponse response = new DefaultFullHttpResponse(

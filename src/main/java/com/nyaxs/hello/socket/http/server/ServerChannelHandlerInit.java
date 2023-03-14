@@ -1,4 +1,4 @@
-package com.nyaxs.hello.socket.http;
+package com.nyaxs.hello.socket.http.server;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -12,7 +12,7 @@ import io.netty.handler.codec.http.*;
  * @description
  * @date 2023-03-13 13:35
  */
-public class ChannelHandlerInit extends ChannelInitializer<SocketChannel> {
+public class ServerChannelHandlerInit extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline pipeline = socketChannel.pipeline();
@@ -20,6 +20,6 @@ public class ChannelHandlerInit extends ChannelInitializer<SocketChannel> {
                 .addLast("decoder", new HttpRequestDecoder())
                 .addLast("aggregator", new HttpObjectAggregator(10 * 1024 * 1024))
                 .addLast("compressor", new HttpContentCompressor())
-                .addLast("busi", new BusiHandler());
+                .addLast("busi", new ServerBusiHandler());
     }
 }
